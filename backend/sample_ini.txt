@@ -1,0 +1,5 @@
+[PROD]
+DB_URI = 'postgresql://<user>:<password>@<server>:<port>/<database>'
+
+[TEST]
+DB_URI = 
