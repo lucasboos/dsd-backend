@@ -18,8 +18,9 @@ CORS(user_api_v1)
 @jwt_required()
 def api_get_users():
     try:
-        users = UserController.get_users()
-        return jsonify(users), HTTPStatus.OK
+        response, status = UserController.get_users()
+
+        return jsonify(response), status
     except Exception as e:
         return jsonify({'error': str(e)}), HTTPStatus.BAD_REQUEST
 
@@ -27,10 +28,11 @@ def api_get_users():
 @user_api_v1.route('/<email>', methods=['GET'])
 def api_get_user(email):
     try:
-        user = UserController.get_user_by_email(email)
-        if user:
-            return jsonify(user), HTTPStatus.OK
-        return jsonify({'message': 'User not found'}), HTTPStatus.NOT_FOUND
+        response, status = UserController.get_user_by_email(email)
+
+        if response:
+            return jsonify(response), status
+        return jsonify(response), status
     except Exception as e:
         return jsonify({'error': str(e)}), HTTPStatus.BAD_REQUEST
 
@@ -87,8 +89,8 @@ def api_signin_user():
         email = expect(req.get('email'), str, 'email')
         password = expect(req.get('password'), str, 'password')
 
-        res = Login.login(email, password)
+        response, status = Login.login(email, password)
 
-        return jsonify(res), HTTPStatus.OK
+        return jsonify(response), status
     except Exception as e:
         return jsonify({'error': str(e)}), HTTPStatus.BAD_REQUEST
