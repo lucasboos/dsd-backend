@@ -42,8 +42,11 @@ def api_post_cep():
         logradouro = expect(req.get('logradouro'), str, 'logradouro')
         ibge = expect(req.get('ibge'), int, 'ibge')
         bairro = expect(req.get('bairro'), str, 'bairro')
+        cidade = expect(req.get('cidade'), str, 'cidade')
+        uf = expect(req.get('uf'), str, 'uf')
+        ddd = expect(req.get('ddd'), int, 'ddd')
 
-        response, status = CEPController.add_cep(cep=cep, logradouro=logradouro, ibge=ibge, bairro=bairro)
+        response, status = CEPController.add_cep(cep=cep, logradouro=logradouro, ibge=ibge, bairro=bairro, cidade=cidade, uf=uf, ddd=ddd)
 
         return jsonify(response), status
     except Exception as e:

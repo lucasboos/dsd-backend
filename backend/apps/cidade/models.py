@@ -8,9 +8,9 @@ class CidadeModel(db.Model):
     uf = db.Column(db.String(2), nullable=False)
     ddd = db.Column(db.Integer, nullable=False)
 
-    def __init__(self, ibge, nome, uf, ddd):
+    def __init__(self, ibge, cidade, uf, ddd):
         self.ibge = ibge
-        self.nome = nome
+        self.nome = cidade
         self.uf = uf
         self.ddd = ddd
 
@@ -31,9 +31,9 @@ class CidadeModel(db.Model):
         db.session.add(self)
         db.session.commit()
 
-    def update(self, ibge, nome, uf, ddd):
+    def update(self, ibge, cidade, uf, ddd):
         self.ibge = ibge
-        self.nome = nome
+        self.nome = cidade
         self.uf = uf
         self.ddd = ddd
         db.session.commit()

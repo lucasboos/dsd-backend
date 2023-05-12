@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 from .models import CEPModel
+from ..cidade.models import CidadeModel
 
 
 class CEPController:
@@ -18,10 +19,18 @@ class CEPController:
         return {'message': 'CEP not found'}, HTTPStatus.NOT_FOUND
 
     @classmethod
-    def add_cep(cls, cep, logradouro, ibge, bairro):
+    def add_cep(cls, cep, logradouro, ibge, bairro, cidade, uf, ddd):
         cep_exists = CEPModel.find_by_cep(cep)
         if cep_exists:
-            return {'message': f'CEP {cep} already exists'}, HTTPStatus.UNAUTHORIZED
+            return {'message': f'CEP {cep} already exists'}, HTTPStatus.OK
+
+        cidade_exists = CidadeModel.find_by_ibge(ibge)
+        if not cidade_exists:
+            new_cidade = CidadeModel(ibge, cidade, uf, ddd)
+            try:
+                new_cidade.save()
+            except Exception:
+                return {'message': 'An internal error occurred.'}, HTTPStatus.INTERNAL_SERVER_ERROR
 
         new_cep = CEPModel(cep, logradouro, ibge, bairro)
 

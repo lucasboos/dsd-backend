@@ -18,12 +18,12 @@ class CidadeController:
         return {'message': 'Cidade not found'}, HTTPStatus.NOT_FOUND
 
     @classmethod
-    def add_cidade(cls, ibge, nome, uf, ddd):
-        cidade = CidadeModel.find_by_ibge(ibge)
-        if cidade:
+    def add_cidade(cls, ibge, cidade, uf, ddd):
+        cidade_exists = CidadeModel.find_by_ibge(ibge)
+        if cidade_exists:
             return {'message': f'Cidade with IBGE {ibge} already exists'}, HTTPStatus.UNAUTHORIZED
 
-        new_cidade = CidadeModel(ibge, nome, uf, ddd)
+        new_cidade = CidadeModel(ibge, cidade, uf, ddd)
         try:
             new_cidade.save()
         except Exception:
@@ -32,12 +32,12 @@ class CidadeController:
         return new_cidade.json, HTTPStatus.CREATED
 
     @classmethod
-    def update_cidade(cls, ibge, nome, uf, ddd):
-        cidade = CidadeModel.find_by_ibge(ibge)
-        if not cidade:
+    def update_cidade(cls, ibge, cidade, uf, ddd):
+        cidade_exists = CidadeModel.find_by_ibge(ibge)
+        if not cidade_exists:
             return {'message': 'Cidade not found'}, HTTPStatus.NOT_FOUND
 
-        cidade.update(ibge, nome, uf, ddd)
+        cidade_exists.update(ibge, cidade, uf, ddd)
 
         return {'message': 'Cidade updated successfully'}, HTTPStatus.OK
 

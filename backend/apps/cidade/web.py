@@ -39,11 +39,11 @@ def api_post_cidade():
 
     try:
         ibge = expect(req.get('ibge'), int, 'ibge')
-        nome = expect(req.get('nome'), str, 'nome')
+        cidade = expect(req.get('cidade'), str, 'cidade')
         uf = expect(req.get('uf'), str, 'uf')
         ddd = expect(req.get('ddd'), int, 'ddd')
 
-        response, status = CidadeController.add_cidade(ibge=ibge, nome=nome, uf=uf, ddd=ddd)
+        response, status = CidadeController.add_cidade(ibge=ibge, cidade=cidade, uf=uf, ddd=ddd)
 
         return jsonify(response), status
     except Exception as e:
@@ -55,11 +55,11 @@ def api_update_cidade(ibge):
     req = request.get_json()
 
     try:
-        nome = expect(req.get('nome'), str, 'nome')
+        cidade = expect(req.get('cidade'), str, 'cidade')
         uf = expect(req.get('uf'), str, 'uf')
         ddd = expect(req.get('ddd'), int, 'ddd')
 
-        response, status = CidadeController.update_cidade(ibge=ibge, nome=nome, uf=uf, ddd=ddd)
+        response, status = CidadeController.update_cidade(ibge=ibge, cidade=cidade, uf=uf, ddd=ddd)
 
         return jsonify(response), status
     except Exception as e:
