@@ -14,21 +14,21 @@ class UserController:
         return users_json, HTTPStatus.OK
 
     @classmethod
-    def get_user_by_email(cls, email):
-        user = UserModel.find_user_by_email(email)
+    def get_user_by_login(cls, login):
+        user = UserModel.find_user_by_login(login)
         if user:
             return user.json, HTTPStatus.OK
         return {'message': 'User not found'}, HTTPStatus.NOT_FOUND
 
     @classmethod
-    def add_user(cls, email, password):
-        user, status = cls.get_user_by_email(email)
-        if status == HTTPStatus.OK:
-            return {'message': f'Login {email} already exists'}, HTTPStatus.UNAUTHORIZED
+    def add_user(cls, nome, login, password, cep, numero=None, complemento=None, telefone=None):
+        user = UserModel.find_user_by_login(login)
+        if user:
+            return {'message': f'Login {login} already exists'}, HTTPStatus.UNAUTHORIZED
 
-        hash_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
-        new_user = UserModel(email, hash_password)
+        new_user = UserModel(nome, login, hashed_password, cep, numero, complemento, telefone)
 
         try:
             new_user.save_user()
@@ -38,40 +38,46 @@ class UserController:
         return new_user.json, HTTPStatus.CREATED
 
     @classmethod
-    def update_user(cls, email, new_email, new_password):
-        user = UserModel.find_user_by_email(email)
+    def update_user(cls, login, new_nome, new_login, new_password, new_cep, new_numero=None, new_complemento=None, new_telefone=None):
+        user = UserModel.find_user_by_login(login)
         if not user:
             return {'message': 'User not found'}, HTTPStatus.NOT_FOUND
 
-        new_email_user, status = cls.get_user_by_email(new_email)
-        if status == HTTPStatus.OK:
-            return {'message': f'Email {new_email} already exists'}, HTTPStatus.UNAUTHORIZED
+        if new_login != login:
+            existing_user = UserModel.find_user_by_login(new_login)
+            if existing_user:
+                return {'message': f'Login {new_login} already exists'}, HTTPStatus.UNAUTHORIZED
 
-        user.email = new_email
-        user.password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-        user.save_user()
+        hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+        user.update_user(new_nome, new_login, hashed_password, new_cep, new_numero, new_complemento, new_telefone)
+
+        try:
+            user.save_user()
+        except Exception:
+            return {'message': 'An internal error occurred.'}, HTTPStatus.INTERNAL_SERVER_ERROR
 
         return {'message': 'User updated successfully'}, HTTPStatus.OK
 
     @classmethod
-    def delete_user(cls, email):
-        user = UserModel.find_user_by_email(email)
+    def delete_user(cls, login):
+        user = UserModel.find_user_by_login(login)
         if not user:
             return {'message': 'User not found'}, HTTPStatus.NOT_FOUND
 
-        user_instance = UserModel.query.filter_by(email=email).first()
-        user_instance.delete_user()
+        user.delete_user()
 
         return {'message': 'User deleted successfully'}, HTTPStatus.OK
 
-class Login:
+
+class LoginController:
     @staticmethod
-    def login(email, password):
-        user, status = UserController.get_user_by_email(email)
+    def login(login, password):
+        user, status = UserController.get_user_by_login(login)
         token = {}
 
         if status == HTTPStatus.OK and bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
-            token['token'] = create_access_token(identity=user['email'])
-            return token, status
+            token['token'] = create_access_token(identity=user['login'])
+            return token, HTTPStatus.OK
 
         return {'message': 'Invalid credentials'}, HTTPStatus.UNAUTHORIZED

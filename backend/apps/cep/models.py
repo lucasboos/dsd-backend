@@ -3,8 +3,7 @@ from ..sql_alchemy import db
 
 class CEPModel(db.Model):
     __tablename__ = 'cep'
-    id = db.Column(db.Integer, primary_key=True)
-    cep = db.Column(db.Integer, nullable=False)
+    cep = db.Column(db.Integer, primary_key=True)
     logradouro = db.Column(db.String(100), nullable=False)
     ibge = db.Column(db.Integer, db.ForeignKey('cidade.ibge'), nullable=False)
     bairro = db.Column(db.String(25), nullable=False)
@@ -18,7 +17,6 @@ class CEPModel(db.Model):
     @property
     def json(self):
         return {
-            'id': self.id,
             'cep': self.cep,
             'logradouro': self.logradouro,
             'ibge': self.ibge,
