@@ -3,6 +3,8 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 
 from apps.user.web import user_api_v1
+from apps.cidade.web import cidade_api_v1
+from apps.cep.web import cep_api_v1
 
 
 def create_app():
@@ -11,5 +13,7 @@ def create_app():
     jwt = JWTManager(app)
 
     app.register_blueprint(user_api_v1)
+    app.register_blueprint(cidade_api_v1)
+    app.register_blueprint(cep_api_v1)
 
     return app
