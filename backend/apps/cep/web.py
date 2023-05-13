@@ -1,6 +1,5 @@
 from flask import Blueprint, request, jsonify
 from flask_cors import CORS
-from flask_jwt_extended import jwt_required
 
 from http import HTTPStatus
 
@@ -12,7 +11,6 @@ CORS(cep_api_v1)
 
 
 @cep_api_v1.route('/', methods=['GET'])
-#@jwt_required()
 def api_get_ceps():
     try:
         response, status = CEPController.get_ceps()

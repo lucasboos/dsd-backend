@@ -1,10 +1,9 @@
 from flask import Blueprint, request, jsonify
 from flask_cors import CORS
-from flask_jwt_extended import jwt_required
 
 from http import HTTPStatus
 
-from .controller import UserController, LoginController
+from .controller import UserController
 from ..utils import expect
 
 
@@ -39,13 +38,12 @@ def api_post_user():
     try:
         nome = expect(req.get('nome'), str, 'nome')
         login = expect(req.get('login'), str, 'login')
-        password = expect(req.get('password'), str, 'password')
         cep = expect(req.get('cep'), int, 'cep')
         numero = req.get('numero')
         complemento = req.get('complemento')
         telefone = req.get('telefone')
 
-        response, status = UserController.add_user(nome, login, password, cep, numero, complemento, telefone)
+        response, status = UserController.add_user(nome, login, cep, numero, complemento, telefone)
         return jsonify(response), status
     except Exception as e:
         return jsonify({'error': str(e)}), HTTPStatus.BAD_REQUEST
@@ -58,13 +56,12 @@ def api_update_user(login):
     try:
         new_nome = expect(req.get('new_nome'), str, 'new_nome')
         new_login = expect(req.get('new_login'), str, 'new_login')
-        new_password = expect(req.get('new_password'), str, 'new_password')
         new_cep = expect(req.get('new_cep'), int, 'new_cep')
         new_numero = req.get('new_numero')
         new_complemento = req.get('new_complemento')
         new_telefone = req.get('new_telefone')
 
-        response, status = UserController.update_user(login, new_nome, new_login, new_password, new_cep, new_numero, new_complemento, new_telefone)
+        response, status = UserController.update_user(login, new_nome, new_login, new_cep, new_numero, new_complemento, new_telefone)
         return jsonify(response), status
     except Exception as e:
         return jsonify({'error': str(e)}), HTTPStatus.BAD_REQUEST
@@ -77,17 +74,3 @@ def api_delete_user(login):
         return jsonify(response), status
     except Exception as e:
         return jsonify({'error': str(e)}), HTTPStatus.BAD_REQUEST
-
-
-@user_api_v1.route('/signin', methods=['POST'])
-def api_signin_user():
-    req = request.get_json()
-
-    try:
-        login = expect(req.get('login'), str, 'login')
-        password = expect(req.get('password'), str, 'password')
-
-        response, status = LoginController.login(login, password)
-        return jsonify(response), status
-    except Exception as e:
-        return jsonify({'error': str(e)})

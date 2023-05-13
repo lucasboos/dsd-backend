@@ -1,6 +1,5 @@
 from flask import Blueprint, request, jsonify
 from flask_cors import CORS
-from flask_jwt_extended import jwt_required
 
 from http import HTTPStatus
 
@@ -12,7 +11,6 @@ CORS(cidade_api_v1)
 
 
 @cidade_api_v1.route('/', methods=['GET'])
-#@jwt_required()
 def api_get_cidades():
     try:
         response, status = CidadeController.get_cidades()

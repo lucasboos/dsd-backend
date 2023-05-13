@@ -1,6 +1,3 @@
-from flask_jwt_extended import create_access_token
-import bcrypt
-
 from http import HTTPStatus
 
 from .models import UserModel
@@ -21,14 +18,12 @@ class UserController:
         return {'message': 'User not found'}, HTTPStatus.NOT_FOUND
 
     @classmethod
-    def add_user(cls, nome, login, password, cep, numero=None, complemento=None, telefone=None):
+    def add_user(cls, nome, login, cep, numero=None, complemento=None, telefone=None):
         user = UserModel.find_user_by_login(login)
         if user:
             return {'message': f'Login {login} already exists'}, HTTPStatus.UNAUTHORIZED
 
-        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-
-        new_user = UserModel(nome, login, hashed_password, cep, numero, complemento, telefone)
+        new_user = UserModel(nome, login, cep, numero, complemento, telefone)
 
         try:
             new_user.save_user()
@@ -38,7 +33,7 @@ class UserController:
         return new_user.json, HTTPStatus.CREATED
 
     @classmethod
-    def update_user(cls, login, new_nome, new_login, new_password, new_cep, new_numero=None, new_complemento=None, new_telefone=None):
+    def update_user(cls, login, new_nome, new_login, new_cep, new_numero=None, new_complemento=None, new_telefone=None):
         user = UserModel.find_user_by_login(login)
         if not user:
             return {'message': 'User not found'}, HTTPStatus.NOT_FOUND
@@ -48,9 +43,7 @@ class UserController:
             if existing_user:
                 return {'message': f'Login {new_login} already exists'}, HTTPStatus.UNAUTHORIZED
 
-        hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-
-        user.update_user(new_nome, new_login, hashed_password, new_cep, new_numero, new_complemento, new_telefone)
+        user.update_user(new_nome, new_login, new_cep, new_numero, new_complemento, new_telefone)
 
         try:
             user.save_user()
@@ -68,16 +61,3 @@ class UserController:
         user.delete_user()
 
         return {'message': 'User deleted successfully'}, HTTPStatus.OK
-
-
-class LoginController:
-    @staticmethod
-    def login(login, password):
-        user, status = UserController.get_user_by_login(login)
-        token = {}
-
-        if status == HTTPStatus.OK and bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
-            token['token'] = create_access_token(identity=user['login'])
-            return token, HTTPStatus.OK
-
-        return {'message': 'Invalid credentials'}, HTTPStatus.UNAUTHORIZED

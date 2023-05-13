@@ -6,16 +6,14 @@ class UserModel(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nome = db.Column(db.String(100), nullable=False)
     login = db.Column(db.String(10), nullable=False)
-    password = db.Column(db.String(255), nullable=False)
     cep = db.Column(db.Integer, nullable=False)
     numero = db.Column(db.Integer)
     complemento = db.Column(db.String(25))
     telefone = db.Column(db.Integer)
 
-    def __init__(self, nome, login, password, cep, numero=None, complemento=None, telefone=None):
+    def __init__(self, nome, login, cep, numero=None, complemento=None, telefone=None):
         self.nome = nome
         self.login = login
-        self.password = password
         self.cep = cep
         self.numero = numero
         self.complemento = complemento
@@ -27,7 +25,6 @@ class UserModel(db.Model):
             'id': self.id,
             'nome': self.nome,
             'login': self.login,
-            'password': self.password,
             'cep': self.cep,
             'numero': self.numero,
             'complemento': self.complemento,
@@ -46,10 +43,9 @@ class UserModel(db.Model):
         db.session.add(self)
         db.session.commit()
 
-    def update_user(self, new_nome, new_login, new_password, new_cep, new_numero=None, new_complemento=None, new_telefone=None):
+    def update_user(self, new_nome, new_login, new_cep, new_numero=None, new_complemento=None, new_telefone=None):
         self.nome = new_nome
         self.login = new_login
-        self.password = new_password
         self.cep = new_cep
         self.numero = new_numero
         self.complemento = new_complemento
