@@ -36,9 +36,9 @@ def api_post_user():
     req = request.get_json()
 
     try:
-        nome = expect(req.get('nome'), str, 'nome')
-        login = expect(req.get('login'), str, 'login')
-        cep = expect(req.get('cep'), int, 'cep')
+        nome = req.get('nome')
+        login = req.get('login')
+        cep = req.get('cep')
         numero = req.get('numero')
         complemento = req.get('complemento')
         telefone = req.get('telefone')

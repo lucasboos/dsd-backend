@@ -1,6 +1,7 @@
 from http import HTTPStatus
+import requests
 
-from .models import UserModel
+from utils import validate_user_fields
 
 
 class UserController:
@@ -19,18 +20,28 @@ class UserController:
 
     @classmethod
     def add_user(cls, nome, login, cep, numero=None, complemento=None, telefone=None):
-        user = UserModel.find_user_by_login(login)
-        if user:
-            return {'message': f'Login {login} already exists'}, HTTPStatus.UNAUTHORIZED
+        payload = {
+            'nome': nome,
+            'login': login,
+            'cep': cep,
+            'numero': numero,
+            'complemento': complemento,
+            'telefone': telefone
+        }
 
-        new_user = UserModel(nome, login, cep, numero, complemento, telefone)
+        validation, payload = validate_user_fields(payload)
+        if validation is not True:
+            return {'message': validation}, HTTPStatus.BAD_REQUEST
 
         try:
-            new_user.save_user()
-        except Exception:
-            return {'message': 'An internal error occurred.'}, HTTPStatus.INTERNAL_SERVER_ERROR
-
-        return new_user.json, HTTPStatus.CREATED
+            response = requests.post('http://127.0.0.1:5000/usuario', json=payload)
+            if response.status_code == 200:
+                dados = response.json()
+                return dados
+            else:
+                print("Erro na requisição:", response.status_code)
+        except requests.exceptions.RequestException as e:
+            print("Ocorreu um erro na requisição:", e)
 
     @classmethod
     def update_user(cls, login, new_nome, new_login, new_cep, new_numero=None, new_complemento=None, new_telefone=None):
