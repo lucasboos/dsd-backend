@@ -10,22 +10,21 @@ cep_api_v1 = Blueprint('cep_api_v1', 'cep_api_v1', url_prefix='/api/v1/cep')
 CORS(cep_api_v1)
 
 
-@cep_api_v1.route('/', methods=['GET'])
-def api_get_ceps():
+@cep_api_v1.route('/cidade/<ibge>', methods=['GET'])
+def api_get_cidade(ibge):
     try:
-        response, status = CEPController.get_ceps()
+        response, status = CEPController.get_cidade(ibge)
+
         return jsonify(response), status
     except Exception as e:
         return jsonify({'error': str(e)}), HTTPStatus.BAD_REQUEST
 
 
-@cep_api_v1.route('/<cep>', methods=['GET'])
-def api_get_cep(cep):
+@cep_api_v1.route('/<ibge>/<cep>', methods=['GET'])
+def api_get_cep(ibge, cep):
     try:
-        response, status = CEPController.get_cep_by_cep(cep)
+        response, status = CEPController.get_cep(ibge, cep)
 
-        if response:
-            return jsonify(response), status
         return jsonify(response), status
     except Exception as e:
         return jsonify({'error': str(e)}), HTTPStatus.BAD_REQUEST
@@ -36,13 +35,13 @@ def api_post_cep():
     req = request.get_json()
 
     try:
-        cep = expect(req.get('cep'), int, 'cep')
-        logradouro = expect(req.get('logradouro'), str, 'logradouro')
-        ibge = expect(req.get('ibge'), int, 'ibge')
-        bairro = expect(req.get('bairro'), str, 'bairro')
-        cidade = expect(req.get('cidade'), str, 'cidade')
-        uf = expect(req.get('uf'), str, 'uf')
-        ddd = expect(req.get('ddd'), int, 'ddd')
+        cep = req.get('cep')
+        logradouro = req.get('logradouro')
+        ibge = req.get('ibge')
+        bairro = req.get('bairro')
+        cidade =req.get('cidade')
+        uf = req.get('uf')
+        ddd = req.get('ddd')
 
         response, status = CEPController.add_cep(cep=cep, logradouro=logradouro, ibge=ibge, bairro=bairro, cidade=cidade, uf=uf, ddd=ddd)
 
@@ -51,27 +50,26 @@ def api_post_cep():
         return jsonify({'error': str(e)}), HTTPStatus.BAD_REQUEST
 
 
-@cep_api_v1.route('/<cep>', methods=['PUT'])
-def api_update_cep(cep):
+@cep_api_v1.route('/<ibge>', methods=['PUT'])
+def api_update_cidade(ibge):
     req = request.get_json()
 
     try:
-        cep = expect(req.get('cep'), int, 'cep')
-        logradouro = expect(req.get('logradouro'), str, 'logradouro')
-        ibge = expect(req.get('ibge'), int, 'ibge')
-        bairro = expect(req.get('bairro'), str, 'bairro')
+        cidade =req.get('cidade')
+        uf = req.get('uf')
+        ddd = req.get('ddd')
 
-        response, status = CEPController.update_cep(cep=cep, logradouro=logradouro, ibge=ibge, bairro=bairro)
+        response, status = CEPController.update_cidade(ibge=ibge, cidade=cidade, uf=uf, ddd=ddd)
 
         return jsonify(response), status
     except Exception as e:
         return jsonify({'error': str(e)}), HTTPStatus.BAD_REQUEST
 
 
-@cep_api_v1.route('/<cep>', methods=['DELETE'])
-def api_delete_cep(cep):
+@cep_api_v1.route('/<ibge>', methods=['DELETE'])
+def api_delete_cidade(ibge):
     try:
-        response, status = CEPController.delete_cep(cep)
+        response, status = CEPController.delete_cidade(ibge)
 
         return jsonify(response), status
     except Exception as e:

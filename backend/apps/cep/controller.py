@@ -1,62 +1,91 @@
 from http import HTTPStatus
+import requests
 
-from .models import CEPModel
-from ..cidade.models import CidadeModel
+from ..utils import validate_cep_fields, validate_cidade_fields
 
 
 class CEPController:
     @classmethod
-    def get_ceps(cls):
-        ceps = CEPModel.query.all()
-        ceps_json = [cep.json for cep in ceps]
-        return ceps_json, HTTPStatus.OK
+    def get_cidade(cls, ibge):
+        try:
+            response = requests.get(f'http://127.0.0.1:5000/localidade/{ibge}')
+            response.raise_for_status()
+
+            data = response.json()
+            if data.get('mensagem'):
+                return {'message': data['mensagem']}, response.status_code
+            return data, response.status_code
+        except requests.exceptions.RequestException as e:
+            return {'message': 'Error occurred during request'}, HTTPStatus.INTERNAL_SERVER_ERROR
 
     @classmethod
-    def get_cep_by_cep(cls, cep):
-        cep = CEPModel.find_by_cep(cep)
-        if cep:
-            return cep.json, HTTPStatus.OK
-        return {'message': 'CEP not found'}, HTTPStatus.NOT_FOUND
+    def get_cep(cls, ibge, cep):
+        try:
+            response = requests.get(f'http://127.0.0.1:5000/localidade/{ibge}/{cep}')
+            response.raise_for_status()
+
+            data = response.json()
+            if data.get('mensagem'):
+                return {'message': data['mensagem']}, response.status_code
+            return data, response.status_code
+        except requests.exceptions.RequestException as e:
+            return {'message': 'Error occurred during request'}, HTTPStatus.INTERNAL_SERVER_ERROR
 
     @classmethod
     def add_cep(cls, cep, logradouro, ibge, bairro, cidade, uf, ddd):
-        cep_exists = CEPModel.find_by_cep(cep)
-        if cep_exists:
-            return {'message': f'CEP {cep} already exists'}, HTTPStatus.OK
+        payload = {
+            'cep': cep,
+            'logradouro': logradouro,
+            'ibge': ibge,
+            'bairro': bairro,
+            'cidade': cidade,
+            'uf': uf,
+            'ddd': ddd
+        }
 
-        cidade_exists = CidadeModel.find_by_ibge(ibge)
-        if not cidade_exists:
-            new_cidade = CidadeModel(ibge, cidade, uf, ddd)
-            try:
-                new_cidade.save()
-            except Exception:
-                return {'message': 'An internal error occurred.'}, HTTPStatus.INTERNAL_SERVER_ERROR
-
-        new_cep = CEPModel(cep, logradouro, ibge, bairro)
+        validation, payload = validate_cep_fields(payload)
+        if validation is not True:
+            return {'message': validation}, HTTPStatus.BAD_REQUEST
 
         try:
-            new_cep.save()
-        except Exception:
-            return {'message': 'An internal error occurred.'}, HTTPStatus.INTERNAL_SERVER_ERROR
+            response = requests.post('http://127.0.0.1:5000/localidade', json=payload)
+            response.raise_for_status()
 
-        return new_cep.json, HTTPStatus.CREATED
-
-    @classmethod
-    def update_cep(cls, cep, logradouro, ibge, bairro):
-        cep_exists = CEPModel.find_by_cep(cep)
-        if not cep_exists:
-            return {'message': 'CEP not found'}, HTTPStatus.NOT_FOUND
-
-        cep_exists.update(cep, logradouro, ibge, bairro)
-
-        return {'message': 'CEP updated successfully'}, HTTPStatus.OK
+            data = response.json()
+            return {'message': data['mensagem']}, response.status_code
+        except requests.exceptions.RequestException as e:
+            return {'message': 'Error occurred during request'}, HTTPStatus.INTERNAL_SERVER_ERROR
 
     @classmethod
-    def delete_cep(cls, cep):
-        cep = CEPModel.find_by_cep(cep)
-        if not cep:
-            return {'message': 'CEP not found'}, HTTPStatus.NOT_FOUND
+    def update_cidade(cls, ibge, cidade, uf, ddd):
+        payload = {
+            'cidade': cidade,
+            'uf': uf,
+            'ddd': ddd
+        }
 
-        cep.delete()
+        validation, payload = validate_cidade_fields(payload)
+        if validation is not True:
+            return {'message': validation}, HTTPStatus.BAD_REQUEST
 
-        return {'message': 'CEP deleted successfully'}, HTTPStatus.OK
+        try:
+            response = requests.put(f'http://127.0.0.1:5000/localidade/{ibge}', json=payload)
+            response.raise_for_status()
+
+            data = response.json()
+            return {'message': data['mensagem']}, response.status_code
+        except requests.exceptions.RequestException as e:
+            return {'message': 'Error occurred during request'}, HTTPStatus.INTERNAL_SERVER_ERROR
+
+    @classmethod
+    def delete_cidade(cls, ibge):
+        try:
+            response = requests.delete(f'http://127.0.0.1:5000/localidade/{ibge}')
+            response.raise_for_status()
+
+            data = response.json()
+            if data.get('mensagem'):
+                return {'message': data['mensagem']}, response.status_code
+            return data, response.status_code
+        except requests.exceptions.RequestException as e:
+            return {'message': 'Error occurred during request'}, HTTPStatus.INTERNAL_SERVER_ERROR
