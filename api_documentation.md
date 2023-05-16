@@ -39,9 +39,9 @@ POST /api/v1/cep/ HTTP/1.1
 Content-Type: application/json
 
 {
-  "cep": 12345678,
+  "cep": "12345-678",
   "logradouro": "Rua Exemplo",
-  "ibge": 1234567,
+  "ibge": "1234567",
   "bairro": "Bairro Exemplo",
   "cidade": "Cidade Exemplo",
   "uf": "UF",
