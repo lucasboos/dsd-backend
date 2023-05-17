@@ -21,12 +21,12 @@ Retrieve user information by ID.
 ```json
 {
   "id": 1,
-  "name": "John Doe",
+  "nome": "John Doe",
   "login": "johndoe",
   "cep": "12345-678",
-  "number": 10,
-  "complement": "Apartment 123",
-  "phone": "1234567890"
+  "numero": 10,
+  "complemento": "Apartment 123",
+  "telefone": "1234567890"
 }
 ```
 
@@ -38,6 +38,18 @@ Create a new user.
 
 - Method: `POST`
 - URL: `/api/v1/user/`
+- Body:
+
+```json
+{
+  "nome": "John Doe",
+  "login": "johndoe",
+  "cep": "12345-678",
+  "numero": 10,
+  "complemento": "House",
+  "telefone": "1234567890"
+}
+```
 
 #### Response
 
