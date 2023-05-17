@@ -4,7 +4,7 @@ from flask_cors import CORS
 from http import HTTPStatus
 
 from .controller import CEPController
-from ..utils import expect
+
 
 cep_api_v1 = Blueprint('cep_api_v1', 'cep_api_v1', url_prefix='/api/v1/cep')
 CORS(cep_api_v1)
