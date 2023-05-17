@@ -1,50 +1,170 @@
-# Documentação da API
+# API Documentation
 
-## Endpoint - CEP
+## User API
 
-`POST /api/v1/cep/`
+Base URL: `/api/v1/user`
 
-Esta API permite adicionar um novo CEP ao sistema.
+### Get User by ID
 
+Retrieve user information by ID.
 
-## Parâmetros da Solicitação
+#### Request
 
-A solicitação deve ser feita no formato JSON e deve conter os seguintes campos:
+- Method: `GET`
+- URL: `/api/v1/user/<id>`
 
-- `cep` (obrigatório): CEP numérico de 8 dígitos.
-- `logradouro` (obrigatório): Nome do logradouro associado ao CEP.
-- `ibge` (obrigatório): Código IBGE da cidade associada ao CEP.
-- `bairro` (obrigatório): Nome do bairro associado ao CEP.
-- `cidade` (obrigatório): Nome da cidade associada ao CEP.
-- `uf` (obrigatório): Sigla do estado (UF) associado ao CEP.
-- `ddd` (obrigatório): Código DDD da cidade associada ao CEP.
+#### Response
 
-## Respostas
+- Status: 200 OK
+- Body:
 
-A API retorna uma resposta JSON contendo os seguintes campos:
+```json
+{
+  "id": 1,
+  "name": "John Doe",
+  "login": "johndoe",
+  "cep": "12345-678",
+  "number": 10,
+  "complement": "Apartment 123",
+  "phone": "1234567890"
+}
+```
 
-- Em caso de sucesso:
-  - `message`: Mensagem de sucesso.
-- Em caso de erro:
-  - `error`: Descrição do erro.
+### Create User
 
-A API também retorna o código de status HTTP correspondente a cada resposta.
+Create a new user.
 
-## Exemplos
+#### Request
 
-### Requisição
+- Method: `POST`
+- URL: `/api/v1/user/`
 
-```http
-POST /api/v1/cep/ HTTP/1.1
-Content-Type: application/json
+#### Response
 
+- Status: 200 OK
+- Body:
+
+```json
+{
+  "message": "User created successfully"
+}
+```
+
+## CEP API
+
+Base URL: `/api/v1/cep`
+
+### Get City by IBGE
+
+Retrieve city information by IBGE code.
+
+#### Request
+
+- Method: `GET`
+- URL: `/api/v1/cep/cidade/<ibge>`
+
+#### Response
+
+- Status: 200 OK
+- Body:
+
+```json
+{
+  "ibge": "1234567",
+  "cidade": "São Paulo",
+  "uf": "SP",
+  "ddd": "11"
+}
+```
+
+### Get CEP by IBGE and ZIP Code
+
+Retrieve address information by IBGE code and ZIP code.
+
+#### Request
+
+- Method: `GET`
+- URL: `/api/v1/cep/<ibge>/<cep>`
+
+#### Response
+
+- Status: 200 OK
+- Body:
+
+```json
 {
   "cep": "12345-678",
-  "logradouro": "Rua Exemplo",
+  "logradouro": "Rua Example",
   "ibge": "1234567",
-  "bairro": "Bairro Exemplo",
-  "cidade": "Cidade Exemplo",
-  "uf": "UF",
-  "ddd": 99
+  "bairro": "Example Neighborhood",
+  "cidade": "São Paulo",
+  "uf": "SP",
+  "ddd": "11"
+}
+```
+
+### Create CEP
+
+Create a new address.
+
+#### Request
+
+- Method: `POST`
+- URL: `/api/v1/cep/`
+
+#### Response
+
+- Status: 200 OK
+- Body:
+
+```json
+{
+  "cep": "12345-678",
+  "logradouro": "Rua Example",
+  "ibge": "1234567",
+  "bairro": "Example Neighborhood",
+  "cidade": "São Paulo",
+  "uf": "SP",
+  "ddd": "11"
+}
+```
+
+### Update City
+
+Update city information by IBGE code.
+
+#### Request
+
+- Method: `PUT`
+- URL: `/api/v1/cep/<ibge>`
+
+#### Response
+
+- Status: 200 OK
+- Body:
+
+```json
+{
+  "message": "City updated successfully"
+}
+```
+
+### Delete City
+
+Delete city information by IBGE code.
+
+#### Request
+
+- Method: `DELETE`
+- URL: `/api/v1/cep/<ibge>`
+
+#### Response
+
+- Status: 200 OK
+- Body:
+
+```json
+{
+  "message": "City deleted successfully"
 }
 ```
