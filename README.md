@@ -68,10 +68,6 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Alterar o arquivo de configurações de ambiente
-- Renomear o arquivo `sample_ini` para `.ini`.
-- Altere respectivamente os dados da URL: postgresql://`user`:`password`@`server`:`port`/`database`
-
 ### Iniciar a aplicação
 
 Obs. tenha certeza que o ambiente virtual esteja habilitado.
