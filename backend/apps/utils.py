@@ -48,12 +48,8 @@ def validate_cep_fields(payload):
     elif not ddd or len(str(ddd)) > 3:
         return ('O DDD ultrapassou o limite de caracteres ou está vazio', payload)
 
-    numero = payload.get('numero', 0)
-    complemento = payload.get('complemento', '')
     ddd = payload.get('ddd', 0)
 
-    payload['numero'] = numero
-    payload['complemento'] = complemento
     payload['ddd'] = ddd
 
     return (True, payload)

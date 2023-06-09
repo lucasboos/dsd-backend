@@ -6,6 +6,30 @@ from ..utils import validate_user_fields
 
 class UserController:
     @classmethod
+    def get_users(cls):
+        try:
+            response = requests.get('http://127.0.0.1:5000/usuarios')
+            data = response.json()
+
+            if isinstance(data, dict) and data.get('mensagem'):
+                return {'message': data['mensagem']}, response.status_code
+            return data, response.status_code
+        except requests.exceptions.RequestException as e:
+            return {'message': 'Error occurred during request'}, HTTPStatus.INTERNAL_SERVER_ERROR
+
+    @classmethod
+    def get_users_complete(cls):
+        try:
+            response = requests.get('http://127.0.0.1:5000/dados')
+            data = response.json()
+
+            if isinstance(data, dict) and data.get('mensagem'):
+                return {'message': data['mensagem']}, response.status_code
+            return data, response.status_code
+        except requests.exceptions.RequestException as e:
+            return {'message': 'Error occurred during request'}, HTTPStatus.INTERNAL_SERVER_ERROR
+
+    @classmethod
     def get_user_by_id(cls, id):
         try:
             response = requests.get(f'http://127.0.0.1:5000/usuario/{id}')
@@ -37,5 +61,18 @@ class UserController:
             data = response.json()
 
             return {'message': data['mensagem']}, response.status_code
+        except requests.exceptions.RequestException as e:
+            return {'message': 'Error occurred during request'}, HTTPStatus.INTERNAL_SERVER_ERROR
+
+    @classmethod
+    def delete_user(cls, id):
+        try:
+            response = requests.delete(f'http://127.0.0.1:5000/usuario/{id}')
+            response.raise_for_status()
+
+            data = response.json()
+            if data.get('mensagem'):
+                return {'message': data['mensagem']}, response.status_code
+            return data, response.status_code
         except requests.exceptions.RequestException as e:
             return {'message': 'Error occurred during request'}, HTTPStatus.INTERNAL_SERVER_ERROR
